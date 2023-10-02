@@ -17,9 +17,10 @@ The film industry is a multi-billion-dollar ecosystem where success is often mea
 7) Yearly Revenue Trends: How has movie revenue evolved over the years? Are there any notable patterns or spikes in revenue, and can these be attributed to specific factors like major film releases or industry trends?
 8) Predictive Modeling: Can we build a predictive model to forecast the revenue of a movie based on its rating, genre, and other relevant factors? Such a model could be a valuable tool for filmmakers and studios in making investment decisions.
 
-#  Table Description
+#   Table Description
 
-    ![image](https://github.com/kavya-thuta/IMDB-Movie-Rating-and-Revenue-Analysis/assets/146629146/9f6aea01-c691-4303-9777-53409aa5fa0b)
+![image](https://github.com/kavya-thuta/IMDB-Movie-Rating-and-Revenue-Analysis/assets/146629146/6274f107-ad21-4167-834e-1687b8cc27be)
+
 
 
 
