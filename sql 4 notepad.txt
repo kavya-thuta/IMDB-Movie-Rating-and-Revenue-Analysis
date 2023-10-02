@@ -1,0 +1,170 @@
+Q1) Segment the movies based on the below criteria using CASE WHEN
+    Revenue greater than or equal to 300 million: Blockbuster
+    Revenue between 200 and 299.99 million: Superhit
+    Revenue between 100 and 199.99 million: Hit
+    Else: Normal
+
+    How many movies are ‘Superhit’ in the year 2014?
+
+A)  SELECT result,
+       Count(title) AS number_of_movies
+    FROM   (SELECT title,
+               genre,
+               revenue_millions,
+               year,
+               CASE
+                 WHEN revenue_millions >= 300 THEN 'Blockbuster'
+                 WHEN revenue_millions BETWEEN 200 AND 299.99 THEN 'Super Hit'
+                 WHEN revenue_millions BETWEEN 100 AND 199.99 THEN 'Hit'
+                 ELSE 'Normal'
+               END AS result
+        FROM   imdb_movies) A
+    WHERE  year = 2014
+    GROUP  BY result 
+
+Q2) Segment the movies based on the below criteria using CASE WHEN
+    Revenue greater than or equal to 300 million: Blockbuster
+    Revenue between 200 and 299.99 million: Superhit
+    Revenue between 100 and 199.99 million: Hit
+    Else: Normal
+
+    What is the total revenue of the Blockbuster movies in the year 2015?
+
+A)  SELECT result,
+       Sum(revenue_millions) AS tot_revenue
+    FROM   (SELECT title,
+               genre,
+               revenue_millions,
+               year,
+               CASE
+                 WHEN revenue_millions >= 300 THEN 'Blockbuster'
+                 WHEN revenue_millions BETWEEN 200 AND 299.99 THEN 'Super Hit'
+                 WHEN revenue_millions BETWEEN 100 AND 199.99 THEN 'Hit'
+                 ELSE 'Normal'
+               END AS result
+        FROM   imdb_movies) A
+    WHERE  year = 2015
+    GROUP  BY result 
+
+Q3)  Segment the movies based on ratings using IF statement as below:
+     Rating greater than or equal to 8: ‘Must Watch’
+     Rating between 6 and 7.9: ‘Can Watch’
+     Rating below 6: ‘Avoid’
+
+     How many movies are a ‘Must Watch’ in the entire dataset?
+
+A)    SELECT result,
+           Count(title) AS number_of_movies
+      FROM   (SELECT title,
+               genre,
+               rating,
+               year,
+               IF(rating >= 8, 'Must Watch',
+               IF(rating BETWEEN 6 AND 7.9, 'Can Watch',
+               'Avoid')
+               ) AS result
+        FROM   imdb_movies) A
+      GROUP  BY result 
+
+Q4) Compute total revenue by year and genre for all the movies with ratings less than 7. What is the total revenue of movies with ratings less than 7 in the year 2016 for ‘Drama’?
+
+A)  SELECT year,
+       genre,
+       SUM(IF(rating < 7, revenue_millions, 0))
+    FROM   imdb_movies
+    WHERE  year = 2016
+       AND genre = 'Drama'
+    GROUP  BY year,
+          genre 
+
+Q5) What is the revenue contribution of ‘The Avengers’ in the genre ‘Action’ in the year 2012? 
+
+A) SELECT title,
+       revenue_millions * 100 / (SELECT Sum(revenue_millions)
+                                 FROM   imdb_movies
+                                 WHERE  genre = 'Action'
+                                        AND year = 2012) AS perc_revenue
+   FROM   imdb_movies
+   WHERE  title = 'The Avengers' 
+
+Q6) What is the revenue contribution of the genre ‘Comedy’ of total revenue in the year 2016? 
+
+A) SELECT genre,
+       Sum(revenue_millions) * 100 / (SELECT Sum(revenue_millions)
+                                      FROM   imdb_movies
+                                      WHERE  year = 2016) AS perc_revenue
+   FROM   imdb_movies
+   WHERE  genre = 'Comedy'
+       AND year = 2016 
+
+Q7)  Which genre has the highest revenue collection for the last 3 years? Enter its revenue.
+
+A)   SELECT Max(A.tot_revenue)
+     FROM   (SELECT genre,
+               Sum(revenue_millions) AS tot_revenue
+        FROM   imdb_movies
+        WHERE  year IN ( 2014, 2015, 2016 )
+        GROUP  BY genre) AS A 
+
+Q8)  Find out the the director who has highest average rating of his/her movies. Enter the rating.
+
+A)   SELECT Max(A.avg_rating)
+     FROM   (SELECT director,
+               Avg(rating) AS avg_rating
+        FROM   imdb_movies
+        GROUP  BY director) AS A 
+
+Q9)  How many movies have revenue greater than highest movie revenue of the ‘Adventure’ genre?
+
+A)   SELECT Count(*)
+       FROM  imdb_movies
+       WHERE  revenue_millions > (SELECT Max(revenue_millions)
+                                  FROM   imdb_movies
+                                  WHERE  genre = 'Adventure')
+
+Q10) How many movies have ratings greater than highest movie rating of the year 2015?
+
+A)  SELECT Count(*)
+       FROM   imdb_movies
+       WHERE  rating > (SELECT Max(rating)
+                        FROM   imdb_movies
+                        WHERE  year = 2015)
+
+Q11)  What is the minimum revenue corresponding to a movie such that its rating is higher than highest movie rating of the year 2015 and its revenue is greater than        
+      highest movie revenue of the ‘Comedy’ genre?
+
+A)   SELECT Min(revenue_millions)
+     FROM   imdb_movies
+     WHERE  rating > (SELECT Max(rating)
+                 FROM   imdb_movies
+                 WHERE  year = 2015)
+       AND revenue_millions > (SELECT Max(revenue_millions)
+                               FROM   imdb_movies
+                               WHERE  genre = 'Comedy') 
+Q12) How many movies contribute more than 10% of revenue to the total revenue of all movies in a year?
+
+A)   SELECT Count(*)
+     FROM   (SELECT title,
+               ( revenue_millions * 100 / tot_revenue ) AS perc_revenue
+        FROM   imdb_movies A
+               INNER JOIN (SELECT year,
+                                  Sum(revenue_millions) AS tot_revenue
+                           FROM   imdb_movies
+                           GROUP  BY year) b
+                       ON A.year = b.year
+        WHERE  ( revenue_millions * 100 / tot_revenue ) > 10) C 
+
+Q13) How many movies contribute more than 5% of revenue to the total revenue of all movies in their respective genre?
+
+A)  SELECT Count(*)
+    FROM   (SELECT title,
+               ( revenue_millions * 100 / tot_revenue ) AS perc_revenue
+        FROM   imdb_movies A
+               INNER JOIN (SELECT genre,
+                                  Sum(revenue_millions) AS tot_revenue
+                           FROM   imdb_movies
+                           GROUP  BY genre) b
+                       ON A.genre = b.genre
+        WHERE  ( revenue_millions * 100 / tot_revenue ) > 5) C
+
+
